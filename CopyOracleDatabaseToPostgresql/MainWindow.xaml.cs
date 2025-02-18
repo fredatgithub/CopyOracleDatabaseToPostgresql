@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Windows.Controls;
+using System;
 
 namespace CopyOracleDatabaseToPostgresql
 {
@@ -67,10 +68,15 @@ namespace CopyOracleDatabaseToPostgresql
 
       if (checkedItems.Count == 0)
       {
-        checkedItems.Add("Aucune case à cocher n'est cochée.");
+        TextResult.Text = "Aucune case à cocher n'est cochée.";
       }
-
-      TextResult.Text = string.Join("\n", checkedItems);
+      else
+      {
+        TextResult.Text = "Les étapes qui seront faites sont les suivantes :";
+        TextResult.Text += Environment.NewLine;
+      }
+        
+      TextResult.Text += string.Join("\n", checkedItems);
     }
   }
 }
