@@ -77,6 +77,7 @@ namespace CopyOracleDatabaseToPostgresql
       }
         
       TextResult.Text += string.Join("\n", checkedItems);
+
     }
   }
 }
