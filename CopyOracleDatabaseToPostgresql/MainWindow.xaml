@@ -5,7 +5,7 @@
   <Grid Margin="10">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="*" />
-      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="Auto" />
       <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
     <StackPanel Grid.Column="0" Margin="10">
@@ -15,6 +15,6 @@
       <CheckBox Content="Fill tables" />
     </StackPanel>
     <Button Grid.Column="1" Content="Start" Width="100" Height="30" HorizontalAlignment="Center" Padding="0,0,0,0" />
-    <TextBox Grid.Column="2" Height="300" AcceptsReturn="True" TextWrapping="Wrap" HorizontalAlignment="Stretch" />
+    <TextBox Grid.Column="2" Height="Auto" AcceptsReturn="True" TextWrapping="Wrap" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"/>
   </Grid>
 </Window>
