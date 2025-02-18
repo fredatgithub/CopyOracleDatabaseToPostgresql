@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using System.IO;
+using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Windows.Controls;
 
 namespace CopyOracleDatabaseToPostgresql
 {
@@ -31,10 +33,10 @@ namespace CopyOracleDatabaseToPostgresql
     private void SaveWindowSettings()
     {
       var settings = new {
-        Width = this.Width,
-        Height = this.Height,
-        Left = this.Left,
-        Top = this.Top
+        this.Width,
+        this.Height,
+        this.Left,
+        this.Top
       };
       File.WriteAllText(SettingsFile, JsonConvert.SerializeObject(settings));
     }
@@ -49,6 +51,17 @@ namespace CopyOracleDatabaseToPostgresql
         this.Left = settings.Left;
         this.Top = settings.Top;
       }
+    }
+
+    private void StartButton_Click(object sender, RoutedEventArgs e) {
+      var checkedItems = new List<string>();
+      foreach (var child in ((StackPanel)this.FindName("ListOfActions")).Children) {
+        if (child is CheckBox checkBox && checkBox.IsChecked == true) {
+          checkedItems.Add(checkBox.Content.ToString());
+        }
+      }
+
+      TextResult.Text = string.Join("\n", checkedItems);
     }
   }
 }

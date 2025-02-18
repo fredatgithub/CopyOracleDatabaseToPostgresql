@@ -9,14 +9,16 @@
       <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
     <Border BorderBrush="Black" BorderThickness="2" Margin="5">
-      <StackPanel Margin="10">
+      <StackPanel Name="ListOfActions" Margin="10">
         <CheckBox Content="Create Role" />
         <CheckBox Content="Create Schemas" />
         <CheckBox Content="Create tables" />
         <CheckBox Content="Fill tables" />
       </StackPanel>
     </Border>
-    <Button Grid.Column="1" Content="Start" Width="100" Height="30" HorizontalAlignment="Center" Padding="0,0,0,0" />
-    <TextBox Grid.Column="2" Height="Auto" AcceptsReturn="True" TextWrapping="Wrap" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"/>
+    <Button Name="StartProcessing" Click="StartButton_Click" Grid.Column="1" Content="Start" Width="100" Height="30" HorizontalAlignment="Center" Padding="0,0,0,0" />
+    <Border Grid.Column="2" BorderBrush="Black" BorderThickness="2" Padding="2" Margin="2" >
+      <TextBox Name="TextResult" Grid.Column="2" Height="Auto" AcceptsReturn="True" TextWrapping="Wrap" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"/>
+    </Border>
   </Grid>
 </Window>
