@@ -9,7 +9,7 @@ namespace CopyOracleDatabaseToPostgresql
   /// <summary>
   /// Logique d'interaction pour MainWindow.xaml
   /// </summary>
-  public partial class MainWindow : Window
+  public partial class MainWindow: Window
   {
     private const string SettingsFile = "settings.json";
 
@@ -32,7 +32,8 @@ namespace CopyOracleDatabaseToPostgresql
 
     private void SaveWindowSettings()
     {
-      var settings = new {
+      var settings = new
+      {
         this.Width,
         this.Height,
         this.Left,
@@ -53,12 +54,20 @@ namespace CopyOracleDatabaseToPostgresql
       }
     }
 
-    private void StartButton_Click(object sender, RoutedEventArgs e) {
+    private void StartButton_Click(object sender, RoutedEventArgs e)
+    {
       var checkedItems = new List<string>();
-      foreach (var child in ((StackPanel)this.FindName("ListOfActions")).Children) {
-        if (child is CheckBox checkBox && checkBox.IsChecked == true) {
+      foreach (var child in ((StackPanel)this.FindName("ListOfActions")).Children)
+      {
+        if (child is CheckBox checkBox && checkBox.IsChecked == true)
+        {
           checkedItems.Add(checkBox.Content.ToString());
         }
+      }
+
+      if (checkedItems.Count == 0)
+      {
+        checkedItems.Add("Aucune case à cocher n'est cochée.");
       }
 
       TextResult.Text = string.Join("\n", checkedItems);
