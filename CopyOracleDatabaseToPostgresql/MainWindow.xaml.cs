@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Windows.Controls;
 using System;
+using CopyOracleDatabaseToPostgresql.Model;
 
 namespace CopyOracleDatabaseToPostgresql
 {
@@ -78,6 +79,23 @@ namespace CopyOracleDatabaseToPostgresql
         
       TextResult.Text += string.Join("\n", checkedItems);
 
+      if (checkedItems.Contains("Create Role"))
+      {
+        TextResult.Text += Environment.NewLine;
+        TextResult.Text += "Création des Rôles";
+        TextResult.Text += Environment.NewLine;
+        var roleName = "role1";
+        var sqlRequest = BddAccess.GetCreationRoleSqlRequest(roleName);
+        var creationRoleResult = BddAccess.ExecuteSqlRequest(sqlRequest);
+        if (creationRoleResult.StartsWith("ok"))
+        {
+          TextResult.Text += $"Le rôle {roleName} a été créé.";
+        }
+        else
+        {
+          TextResult.Text += $"Erreur lors de la création du rôle {roleName}, l'erreur est : {creationRoleResult} ";
+        }
+      }
     }
   }
 }
