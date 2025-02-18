@@ -8,12 +8,14 @@
       <ColumnDefinition Width="Auto" />
       <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
-    <StackPanel Grid.Column="0" Margin="10">
-      <CheckBox Content="Create Role" />
-      <CheckBox Content="Create Schemas" />
-      <CheckBox Content="Create tables" />
-      <CheckBox Content="Fill tables" />
-    </StackPanel>
+    <Border BorderBrush="Black" BorderThickness="2" Margin="5">
+      <StackPanel Margin="10">
+        <CheckBox Content="Create Role" />
+        <CheckBox Content="Create Schemas" />
+        <CheckBox Content="Create tables" />
+        <CheckBox Content="Fill tables" />
+      </StackPanel>
+    </Border>
     <Button Grid.Column="1" Content="Start" Width="100" Height="30" HorizontalAlignment="Center" Padding="0,0,0,0" />
     <TextBox Grid.Column="2" Height="Auto" AcceptsReturn="True" TextWrapping="Wrap" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch"/>
   </Grid>
