@@ -41,6 +41,7 @@ namespace CopyOracleDatabaseToPostgresql
         this.Left,
         this.Top
       };
+
       File.WriteAllText(SettingsFile, JsonConvert.SerializeObject(settings));
     }
 
@@ -84,17 +85,21 @@ namespace CopyOracleDatabaseToPostgresql
         TextResult.Text += Environment.NewLine;
         TextResult.Text += "Création des Rôles";
         TextResult.Text += Environment.NewLine;
-        var roleName = "role1";
-        var sqlRequest = BddAccess.GetCreationRoleSqlRequest(roleName);
-        var creationRoleResult = BddAccess.ExecuteSqlRequest(sqlRequest);
-        if (creationRoleResult.StartsWith("ok"))
+        var roleNameList = BddAccess.GetRoleList();
+        foreach (var roleName in roleNameList)
         {
-          TextResult.Text += $"Le rôle {roleName} a été créé.";
+          var sqlRequest = BddAccess.GetCreationRoleSqlRequest(roleName);
+          var creationRoleResult = BddAccess.ExecuteSqlRequest(sqlRequest);
+          if (creationRoleResult.StartsWith("ok"))
+          {
+            TextResult.Text += $"Le rôle {roleName} a été créé.";
+          }
+          else
+          {
+            TextResult.Text += $"Erreur lors de la création du rôle {roleName}, l'erreur est : {creationRoleResult.Substring(3)} ";
+          }
         }
-        else
-        {
-          TextResult.Text += $"Erreur lors de la création du rôle {roleName}, l'erreur est : {creationRoleResult} ";
-        }
+        
       }
     }
   }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Dynamic;
 using System.IO;
@@ -66,6 +67,35 @@ namespace CopyOracleDatabaseToPostgresql.Model
         using (var file = File.CreateText(filename))
         {
           file.WriteLine("Server=localhost;Port=5432;Database=databaseName;User Id=username;Password=password;");
+        }
+      }
+      catch (Exception exception)
+      {
+        throw new ArgumentException(exception.Message);
+      }
+    }
+
+    public static List<string> GetRoleList()
+    {
+      const string roleListFilename = "roleList.txt";
+      if (File.Exists(roleListFilename))
+      {
+        return new List<string>(File.ReadAllLines(roleListFilename));
+      }
+      else
+      {
+        CreateRoleListFile(roleListFilename);
+        return new List<string>(File.ReadAllLines(roleListFilename));
+      }
+    }
+
+    private static void CreateRoleListFile(string filename)
+    {
+      try
+      {
+        using (var file = File.CreateText(filename))
+        {
+          file.WriteLine("role1");
         }
       }
       catch (Exception exception)
