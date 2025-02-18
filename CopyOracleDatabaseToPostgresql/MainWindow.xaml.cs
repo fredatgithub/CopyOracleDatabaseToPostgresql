@@ -99,7 +99,11 @@ namespace CopyOracleDatabaseToPostgresql
             TextResult.Text += $"Erreur lors de la création du rôle {roleName}, l'erreur est : {creationRoleResult.Substring(3)} ";
           }
         }
-        
+      }
+
+      if (checkedItems.Contains("Create Schemas"))
+      {
+
       }
     }
   }
