@@ -77,7 +77,7 @@ namespace CopyOracleDatabaseToPostgresql
         TextResult.Text = "Les étapes qui seront faites sont les suivantes :";
         TextResult.Text += Environment.NewLine;
       }
-        
+
       TextResult.Text += string.Join("\n", checkedItems);
 
       // create roles
@@ -122,7 +122,28 @@ namespace CopyOracleDatabaseToPostgresql
             TextResult.Text += $"Erreur lors de la création du schéma {schemaName}, l'erreur est : {creationSchemaResult.Substring(3)} ";
           }
         }
+      }
 
+      // create tables
+      if (checkedItems.Contains("Create tables"))
+      {
+        TextResult.Text += Environment.NewLine;
+        TextResult.Text += "Création des Tables";
+        TextResult.Text += Environment.NewLine;
+        var tableNameList = BddAccess.GetTableList();
+        foreach (var tableName in tableNameList)
+        {
+          var sqlRequest = BddAccess.GetCreationTableSqlRequest(tableName, "schema1");
+          var creationTableResult = BddAccess.ExecuteSqlRequest(sqlRequest);
+          if (creationTableResult.StartsWith("ok"))
+          {
+            TextResult.Text += $"La table {tableName} a été créée.";
+          }
+          else
+          {
+            TextResult.Text += $"Erreur lors de la création de la table {tableName}, l'erreur est : {creationTableResult.Substring(3)} ";
+          }
+        }
       }
     }
   }

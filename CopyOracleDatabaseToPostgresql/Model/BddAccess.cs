@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Xml.Schema;
 using Npgsql;
 
 namespace CopyOracleDatabaseToPostgresql.Model
@@ -27,8 +28,10 @@ namespace CopyOracleDatabaseToPostgresql.Model
       try
       {
         connexion.Open();
-        var command = new NpgsqlCommand(sqlRequest, connexion);
-        command.CommandType = CommandType.Text;
+        var command = new NpgsqlCommand(sqlRequest, connexion)
+        {
+          CommandType = CommandType.Text
+        };
         int returnRows = command.ExecuteNonQuery();
         result = $"ok|{returnRows}";
       }
@@ -46,7 +49,7 @@ namespace CopyOracleDatabaseToPostgresql.Model
 
     private static string GetConnectionString()
     {
-      string filename = "connectionString.txt";
+      const string filename = "connectionString.txt";
       if (File.Exists(filename))
       {
         return File.ReadAllText(filename);
@@ -134,6 +137,40 @@ namespace CopyOracleDatabaseToPostgresql.Model
     internal static string GetCreationSchemaSqlRequest(string schemaName)
     {
       return $"CREATE SCHEMA {schemaName} AUTHORIZATION {schemaName};";
+    }
+
+    internal static IEnumerable<string> GetTableList()
+    {
+      const string tableListFilename = "tableList.txt";
+      if (File.Exists(tableListFilename))
+      {
+        return new List<string>(File.ReadAllLines(tableListFilename));
+      }
+      else
+      {
+        CreateTableListFile(tableListFilename);
+        return new List<string>(File.ReadAllLines(tableListFilename));
+      }
+    }
+
+    private static void CreateTableListFile(string filename)
+    {
+      try
+      {
+        using (var file = File.CreateText(filename))
+        {
+          file.WriteLine("table1");
+        }
+      }
+      catch (Exception exception)
+      {
+        throw new ArgumentException(exception.Message);
+      }
+    }
+
+    internal static string GetCreationTableSqlRequest(string tableName, string sqlSchema)
+    {
+      return $"CREATE TABLE {sqlSchema}.{tableName} (dual int2 NULL);";
     }
   }
 }
