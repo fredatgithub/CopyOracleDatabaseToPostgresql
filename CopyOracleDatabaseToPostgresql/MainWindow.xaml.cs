@@ -39,15 +39,23 @@ namespace CopyOracleDatabaseToPostgresql
         {
           case 0:
             Schema1.Content = schemaList[i];
+            CreateTablesSchema1.Content = "Create tables in " + schemaList[i];
+            FillTablesSchema1.Content = "Fill tables in " + schemaList[i];
             break;
           case 1:
             Schema2.Content = schemaList[i];
+            CreateTablesSchema2.Content = "Create tables in " + schemaList[i];
+            FillTablesSchema2.Content = "Fill tables in " + schemaList[i];
             break;
           case 2:
             Schema3.Content = schemaList[i];
+            CreateTablesSchema3.Content = "Create tables in " + schemaList[i].Replace("_", "__");
+            FillTablesSchema3.Content = "Fill tables in " + schemaList[i].Replace("_", "__");
             break;
           case 3:
             Schema4.Content = schemaList[i];
+            CreateTablesSchema4.Content = "Create tables in " + schemaList[i].Replace("_", "__");
+            FillTablesSchema4.Content = "Fill tables in " + schemaList[i].Replace("_", "__");
             break;
           default:
             break;
@@ -98,7 +106,7 @@ namespace CopyOracleDatabaseToPostgresql
 
       if (checkedItems.Count == 0)
       {
-        TextResult.Text = "Aucune case à cocher n'est cochée.";
+        TextResult.Text = "Aucune action n'est cochée.";
       }
       else
       {

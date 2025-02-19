@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Xml.Schema;
 using Npgsql;
 
 namespace CopyOracleDatabaseToPostgresql.Model
@@ -45,6 +44,36 @@ namespace CopyOracleDatabaseToPostgresql.Model
       }
 
       return result;
+    }
+
+    private static string GetOracleConnectionString()
+    {
+      const string filename = "OracleConnectionString.txt";
+      if (File.Exists(filename))
+      {
+        return File.ReadAllText(filename);
+      }
+      else
+      {
+        CreateOracleConnectionStringFile(filename);
+        return File.ReadAllText(filename);
+      }
+    }
+
+    private static void CreateOracleConnectionStringFile(string filename)
+    {
+      try
+      {
+        using (var file = File.CreateText(filename))
+        {
+          // à modifier pour Oracle
+          file.WriteLine("Server=localhost;Port=5432;Database=databaseName;User Id=username;Password=password;");
+        }
+      }
+      catch (Exception exception)
+      {
+        throw new ArgumentException(exception.Message);
+      }
     }
 
     private static string GetConnectionString()
