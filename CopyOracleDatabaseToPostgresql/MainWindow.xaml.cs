@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 using System.Windows.Controls;
 using System;
 using CopyOracleDatabaseToPostgresql.Model;
+using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace CopyOracleDatabaseToPostgresql
 {
@@ -25,6 +27,32 @@ namespace CopyOracleDatabaseToPostgresql
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
       RestoreWindowSettings();
+      LoadSqlSchemas();
+    }
+
+    private void LoadSqlSchemas()
+    {
+      List<string> schemaList = BddAccess.GetSchemaList();
+      for (int i = 0; i < schemaList.Count; i++)
+      {
+        switch (i)
+        {
+          case 0:
+            Schema1.Content = schemaList[i];
+            break;
+          case 1:
+            Schema2.Content = schemaList[i];
+            break;
+          case 2:
+            Schema3.Content = schemaList[i];
+            break;
+          case 3:
+            Schema4.Content = schemaList[i];
+            break;
+          default:
+            break;
+        }
+      }
     }
 
     private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

@@ -105,7 +105,7 @@ namespace CopyOracleDatabaseToPostgresql.Model
       }
     }
 
-    internal static IEnumerable<string> GetSchemaList()
+    internal static List<string> GetSchemaList()
     {
       const string schemaListFilename = "schemaList.txt";
       if (File.Exists(schemaListFilename))
