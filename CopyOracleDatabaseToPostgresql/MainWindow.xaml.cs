@@ -80,6 +80,7 @@ namespace CopyOracleDatabaseToPostgresql
         
       TextResult.Text += string.Join("\n", checkedItems);
 
+      // create roles
       if (checkedItems.Contains("Create Role"))
       {
         TextResult.Text += Environment.NewLine;
@@ -101,8 +102,26 @@ namespace CopyOracleDatabaseToPostgresql
         }
       }
 
+      // create schemas
       if (checkedItems.Contains("Create Schemas"))
       {
+        TextResult.Text += Environment.NewLine;
+        TextResult.Text += "Création des Schémas";
+        TextResult.Text += Environment.NewLine;
+        var schemaNameList = BddAccess.GetSchemaList();
+        foreach (var schemaName in schemaNameList)
+        {
+          var sqlRequest = BddAccess.GetCreationSchemaSqlRequest(schemaName);
+          var creationSchemaResult = BddAccess.ExecuteSqlRequest(sqlRequest);
+          if (creationSchemaResult.StartsWith("ok"))
+          {
+            TextResult.Text += $"Le schéma {schemaName} a été créé.";
+          }
+          else
+          {
+            TextResult.Text += $"Erreur lors de la création du schéma {schemaName}, l'erreur est : {creationSchemaResult.Substring(3)} ";
+          }
+        }
 
       }
     }

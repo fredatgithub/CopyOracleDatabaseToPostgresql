@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Dynamic;
 using System.IO;
 using Npgsql;
 
@@ -45,7 +44,6 @@ namespace CopyOracleDatabaseToPostgresql.Model
       return result;
     }
 
-
     private static string GetConnectionString()
     {
       string filename = "connectionString.txt";
@@ -56,7 +54,7 @@ namespace CopyOracleDatabaseToPostgresql.Model
       else
       {
         CreateConnectionStringFile(filename);
-        return File.ReadAllText(filename); 
+        return File.ReadAllText(filename);
       }
     }
 
@@ -102,6 +100,40 @@ namespace CopyOracleDatabaseToPostgresql.Model
       {
         throw new ArgumentException(exception.Message);
       }
+    }
+
+    internal static IEnumerable<string> GetSchemaList()
+    {
+      const string schemaListFilename = "schemaList.txt";
+      if (File.Exists(schemaListFilename))
+      {
+        return new List<string>(File.ReadAllLines(schemaListFilename));
+      }
+      else
+      {
+        CreateSchemaListFile(schemaListFilename);
+        return new List<string>(File.ReadAllLines(schemaListFilename));
+      }
+    }
+
+    private static void CreateSchemaListFile(string filename)
+    {
+      try
+      {
+        using (var file = File.CreateText(filename))
+        {
+          file.WriteLine("schema1");
+        }
+      }
+      catch (Exception exception)
+      {
+        throw new ArgumentException(exception.Message);
+      }
+    }
+
+    internal static string GetCreationSchemaSqlRequest(string schemaName)
+    {
+      return $"CREATE SCHEMA {schemaName} AUTHORIZATION {schemaName};";
     }
   }
 }
