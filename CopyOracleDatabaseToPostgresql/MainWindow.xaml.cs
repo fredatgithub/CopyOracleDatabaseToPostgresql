@@ -159,11 +159,11 @@ namespace CopyOracleDatabaseToPostgresql
         var insertDataResult = BddAccess.InsertDataIntoPostgresql(data);
         if (insertDataResult.StartsWith("ok"))
         {
-          TextResult.Text += "Les données ont été insérées dans la table.";
+          TextResult.Text += $"Les données ont été insérées dans la table {tableName}";
         }
         else
         {
-          TextResult.Text += $"Erreur lors de l'insertion des données dans les tables, l'erreur est : {insertDataResult.Substring(3)} ";
+          TextResult.Text += $"Erreur lors de l'insertion des données dans la table {tableName}, l'erreur est : {insertDataResult.Substring(3)} ";
         }
       }
     }
