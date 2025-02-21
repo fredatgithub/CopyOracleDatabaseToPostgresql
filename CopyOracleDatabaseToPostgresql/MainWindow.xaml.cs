@@ -120,7 +120,8 @@ namespace CopyOracleDatabaseToPostgresql
       foreach (string item in checkedItems)
       {
         // create roles
-        switch (item)
+        string firstTwoWords = item.Split(' ').Take(2).Aggregate((a, b) => a + " " + b);
+        switch (firstTwoWords)
         {
           case "Create Roles":
             CreateRoleFor(item);
@@ -135,6 +136,9 @@ namespace CopyOracleDatabaseToPostgresql
             FillTables(item);
             break;
           default:
+            AddNewLine();
+            TextResult.Text += "Pas d'action trouvée.";
+            AddNewLine();
             break;
         }
       }
@@ -145,9 +149,12 @@ namespace CopyOracleDatabaseToPostgresql
       // Fill Tables
       if (item.Contains("Fill tables"))
       {
+        var schemaName = item.Replace("Fill tables in ", "");
+        var tablesList = BddAccess.GetTableList();
+        var tableName = tablesList.FirstOrDefault();
         // get data from oracle
         var oracleConnectionString = BddAccess.GetOracleConnectionString();
-        var data = BddAccess.GetDataFromOracle();
+        var data = BddAccess.GetDataFromOracle(oracleConnectionString, tableName);
         // insert data into postgresql
         var insertDataResult = BddAccess.InsertDataIntoPostgresql(data);
         if (insertDataResult.StartsWith("ok"))

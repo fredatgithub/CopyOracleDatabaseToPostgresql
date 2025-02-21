@@ -194,9 +194,12 @@ namespace CopyOracleDatabaseToPostgresql.Model
       return $"{sqlRequest};";
     }
 
-    internal static string GetDataFromOracle()
+    internal static string GetDataFromOracle(string connectionString, string tableName)
     {
-      throw new NotImplementedException();
+      string result = "ok";
+      // TODO: get data from oracle
+
+      return result;
     }
 
     internal static string InsertDataIntoPostgresql(object data)
