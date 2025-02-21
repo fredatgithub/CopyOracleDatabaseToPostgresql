@@ -193,7 +193,8 @@ namespace CopyOracleDatabaseToPostgresql
     private void FillAllTablesForSchema1(string schema1)
     {
       var schemaName = schema1.Replace("Fill tables in ", "");
-      var tablesList = BddAccess.GetTableList();
+      string tableListFilename = "tableListForSchema1.txt";
+      var tablesList = BddAccess.GetTableList(tableListFilename);
       var tableName = tablesList.FirstOrDefault();
       // get data from oracle
       var oracleConnectionString = BddAccess.GetOracleConnectionString();
@@ -208,7 +209,6 @@ namespace CopyOracleDatabaseToPostgresql
       {
         TextResult.Text += $"Erreur lors de l'insertion des données dans la table {tableName}, l'erreur est : {insertDataResult.Substring(3)} ";
       }
-
     }
 
     private void CreateTables(string item)
@@ -219,7 +219,8 @@ namespace CopyOracleDatabaseToPostgresql
         AddNewLine();
         TextResult.Text += "Création des Tables";
         AddNewLine();
-        var tableNameList = BddAccess.GetTableList();
+        const string tableListFilename = "tableListForSchema1.txt";
+        var tableNameList = BddAccess.GetTableList(tableListFilename);
         foreach (var tableName in tableNameList)
         {
           var sqlRequest = BddAccess.GetCreationTableSqlRequest(tableName, "schema1");

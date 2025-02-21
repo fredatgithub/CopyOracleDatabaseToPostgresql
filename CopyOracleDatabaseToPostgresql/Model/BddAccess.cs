@@ -157,15 +157,21 @@ namespace CopyOracleDatabaseToPostgresql.Model
       return $"CREATE SCHEMA {schemaName} AUTHORIZATION {schemaName};";
     }
 
-    internal static IEnumerable<string> GetTableList()
+    internal static List<string> GetTableListForSchema(string schema)
     {
-      const string tableListFilename = "tableList.txt";
+      // TODO : get table list from schema from database
+      return new List<string>();
+    }
+
+    internal static IEnumerable<string> GetTableList(string tableListFilename)
+    {
       if (!File.Exists(tableListFilename))
       {
         CreateTableListFile(tableListFilename);
       }
 
-      return new List<string>(File.ReadAllLines(tableListFilename));
+      var tableList =  new List<string>(File.ReadAllLines(tableListFilename));
+      return tableList;
     }
 
     private static void CreateTableListFile(string filename)
