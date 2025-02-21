@@ -144,28 +144,71 @@ namespace CopyOracleDatabaseToPostgresql
       }
     }
 
-    private void FillTables(string item)
+    private void FillTables(string item )
     {
       // Fill Tables
-      if (item.Contains("Fill tables"))
+      string schemaName = item.Split(' ').Skip(3).FirstOrDefault() ?? string.Empty;
+      string theSchema = schemaName.Replace("__", "_");
+      List<string> schemaList = BddAccess.GetSchemaList();
+      string schemaOne = schemaList[0].ToString();
+      string schemaTwo = schemaList[1].ToString();
+      string schemaThree = schemaList[2].ToString();
+      string schemaFour = schemaList[3].ToString();
+      if (theSchema == schemaOne)
       {
-        var schemaName = item.Replace("Fill tables in ", "");
-        var tablesList = BddAccess.GetTableList();
-        var tableName = tablesList.FirstOrDefault();
-        // get data from oracle
-        var oracleConnectionString = BddAccess.GetOracleConnectionString();
-        var data = BddAccess.GetDataFromOracle(oracleConnectionString, tableName);
-        // insert data into postgresql
-        var insertDataResult = BddAccess.InsertDataIntoPostgresql(data);
-        if (insertDataResult.StartsWith("ok"))
-        {
-          TextResult.Text += $"Les données ont été insérées dans la table {tableName}";
-        }
-        else
-        {
-          TextResult.Text += $"Erreur lors de l'insertion des données dans la table {tableName}, l'erreur est : {insertDataResult.Substring(3)} ";
-        }
+        FillAllTablesForSchema1(schemaOne);
       }
+
+      if (theSchema == schemaTwo)
+      {
+        FillAllTablesForSchema2(schemaTwo);
+      }
+
+      if (theSchema == schemaThree)
+      {
+        FillAllTablesForSchema3(schemaThree);
+      }
+
+      if (theSchema == schemaFour)
+      {
+        CreateAllTablesForSchema4(schemaFour);
+      }
+    }
+
+    private void CreateAllTablesForSchema4(string schemaFour)
+    {
+      // fill all tables for schema4
+    }
+
+    private void FillAllTablesForSchema3(string schemaThree)
+    {
+      // fill all tables for schema3
+    }
+
+    private void FillAllTablesForSchema2(string schemaTwo)
+    {
+      // fill all tables for schema2
+    }
+
+    private void FillAllTablesForSchema1(string schema1)
+    {
+      var schemaName = schema1.Replace("Fill tables in ", "");
+      var tablesList = BddAccess.GetTableList();
+      var tableName = tablesList.FirstOrDefault();
+      // get data from oracle
+      var oracleConnectionString = BddAccess.GetOracleConnectionString();
+      var data = BddAccess.GetDataFromOracle(oracleConnectionString, tableName);
+      // insert data into postgresql
+      var insertDataResult = BddAccess.InsertDataIntoPostgresql(data);
+      if (insertDataResult.StartsWith("ok"))
+      {
+        TextResult.Text += $"Les données ont été insérées dans la table {tableName}";
+      }
+      else
+      {
+        TextResult.Text += $"Erreur lors de l'insertion des données dans la table {tableName}, l'erreur est : {insertDataResult.Substring(3)} ";
+      }
+
     }
 
     private void CreateTables(string item)
