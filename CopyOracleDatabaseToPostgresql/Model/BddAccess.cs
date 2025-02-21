@@ -46,18 +46,15 @@ namespace CopyOracleDatabaseToPostgresql.Model
       return result;
     }
 
-    private static string GetOracleConnectionString()
+    public static string GetOracleConnectionString()
     {
       const string filename = "OracleConnectionString.txt";
-      if (File.Exists(filename))
-      {
-        return File.ReadAllText(filename);
-      }
-      else
+      if (!File.Exists(filename))
       {
         CreateOracleConnectionStringFile(filename);
-        return File.ReadAllText(filename);
       }
+
+      return File.ReadAllText(filename);
     }
 
     private static void CreateOracleConnectionStringFile(string filename)
@@ -66,8 +63,9 @@ namespace CopyOracleDatabaseToPostgresql.Model
       {
         using (var file = File.CreateText(filename))
         {
-          // à modifier pour Oracle
-          file.WriteLine("Server=localhost;Port=5432;Database=databaseName;User Id=username;Password=password;");
+          const string connectionString = "Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SID=OID)));User Id=username;Password=password;";
+
+          file.WriteLine(connectionString);
         }
       }
       catch (Exception exception)
@@ -79,15 +77,12 @@ namespace CopyOracleDatabaseToPostgresql.Model
     private static string GetConnectionString()
     {
       const string filename = "connectionString.txt";
-      if (File.Exists(filename))
-      {
-        return File.ReadAllText(filename);
-      }
-      else
+      if (!File.Exists(filename))
       {
         CreateConnectionStringFile(filename);
-        return File.ReadAllText(filename);
       }
+
+      return File.ReadAllText(filename);
     }
 
     private static void CreateConnectionStringFile(string filename)
@@ -108,15 +103,12 @@ namespace CopyOracleDatabaseToPostgresql.Model
     public static List<string> GetRoleList()
     {
       const string roleListFilename = "roleList.txt";
-      if (File.Exists(roleListFilename))
-      {
-        return new List<string>(File.ReadAllLines(roleListFilename));
-      }
-      else
+      if (!File.Exists(roleListFilename))
       {
         CreateRoleListFile(roleListFilename);
-        return new List<string>(File.ReadAllLines(roleListFilename));
       }
+
+      return new List<string>(File.ReadAllLines(roleListFilename));
     }
 
     private static void CreateRoleListFile(string filename)
@@ -137,15 +129,12 @@ namespace CopyOracleDatabaseToPostgresql.Model
     internal static List<string> GetSchemaList()
     {
       const string schemaListFilename = "schemaList.txt";
-      if (File.Exists(schemaListFilename))
-      {
-        return new List<string>(File.ReadAllLines(schemaListFilename));
-      }
-      else
+      if (!File.Exists(schemaListFilename))
       {
         CreateSchemaListFile(schemaListFilename);
-        return new List<string>(File.ReadAllLines(schemaListFilename));
       }
+
+      return new List<string>(File.ReadAllLines(schemaListFilename));
     }
 
     private static void CreateSchemaListFile(string filename)
@@ -171,15 +160,12 @@ namespace CopyOracleDatabaseToPostgresql.Model
     internal static IEnumerable<string> GetTableList()
     {
       const string tableListFilename = "tableList.txt";
-      if (File.Exists(tableListFilename))
-      {
-        return new List<string>(File.ReadAllLines(tableListFilename));
-      }
-      else
+      if (!File.Exists(tableListFilename))
       {
         CreateTableListFile(tableListFilename);
-        return new List<string>(File.ReadAllLines(tableListFilename));
       }
+
+      return new List<string>(File.ReadAllLines(tableListFilename));
     }
 
     private static void CreateTableListFile(string filename)
@@ -197,9 +183,28 @@ namespace CopyOracleDatabaseToPostgresql.Model
       }
     }
 
-    internal static string GetCreationTableSqlRequest(string tableName, string sqlSchema)
+    internal static string GetCreationTableSqlRequest(string tableName, string sqlSchema, bool forDualTable = false)
     {
-      return $"CREATE TABLE {sqlSchema}.{tableName} (dual int2 NULL);";
+      string sqlRequest = $"CREATE TABLE {sqlSchema}.{tableName} ";
+      if (forDualTable)
+      {
+        return $"{sqlRequest}(dual int2 NULL);";
+      }
+
+      return $"{sqlRequest};";
+    }
+
+    internal static string GetDataFromOracle()
+    {
+      throw new NotImplementedException();
+    }
+
+    internal static string InsertDataIntoPostgresql(object data)
+    {
+      var result = "ok";
+      // TODO: insert data into postgresql
+
+      return result;
     }
   }
 }

@@ -96,7 +96,7 @@ namespace CopyOracleDatabaseToPostgresql
     private void StartButton_Click(object sender, RoutedEventArgs e)
     {
       var checkedItems = new List<string>();
-      foreach (var child in ((StackPanel)this.FindName("ListOfActions")).Children)
+      foreach (var child in ((StackPanel)FindName("ListOfActions")).Children)
       {
         if (child is CheckBox checkBox && checkBox.IsChecked == true)
         {
@@ -107,65 +107,68 @@ namespace CopyOracleDatabaseToPostgresql
       if (checkedItems.Count == 0)
       {
         TextResult.Text = "Aucune action n'est cochée.";
+        return;
       }
       else
       {
         TextResult.Text = "Les étapes qui seront faites sont les suivantes :";
-        TextResult.Text += Environment.NewLine;
+        AddNewLine();
       }
 
       TextResult.Text += string.Join("\n", checkedItems);
 
-      // create roles
-      if (checkedItems.Contains("Create Role"))
+      foreach (string item in checkedItems)
       {
-        TextResult.Text += Environment.NewLine;
-        TextResult.Text += "Création des Rôles";
-        TextResult.Text += Environment.NewLine;
-        var roleNameList = BddAccess.GetRoleList();
-        foreach (var roleName in roleNameList)
+        // create roles
+        switch (item)
         {
-          var sqlRequest = BddAccess.GetCreationRoleSqlRequest(roleName);
-          var creationRoleResult = BddAccess.ExecuteSqlRequest(sqlRequest);
-          if (creationRoleResult.StartsWith("ok"))
-          {
-            TextResult.Text += $"Le rôle {roleName} a été créé.";
-          }
-          else
-          {
-            TextResult.Text += $"Erreur lors de la création du rôle {roleName}, l'erreur est : {creationRoleResult.Substring(3)} ";
-          }
+          case "Create Roles":
+            CreateRoleFor(item);
+            break;
+          case "Create Schemas":
+            CreateSchemasFor(item);
+            break;
+          case "Create tables":
+            CreateTables(item);
+            break;
+          case "Fill tables":
+            FillTables(item);
+            break;
+          default:
+            break;
         }
       }
+    }
 
-      // create schemas
-      if (checkedItems.Contains("Create Schemas"))
+    private void FillTables(string item)
+    {
+      // Fill Tables
+      if (item.Contains("Fill tables"))
       {
-        TextResult.Text += Environment.NewLine;
-        TextResult.Text += "Création des Schémas";
-        TextResult.Text += Environment.NewLine;
-        var schemaNameList = BddAccess.GetSchemaList();
-        foreach (var schemaName in schemaNameList)
+        // get data from oracle
+        var oracleConnectionString = BddAccess.GetOracleConnectionString();
+        var data = BddAccess.GetDataFromOracle();
+        // insert data into postgresql
+        var insertDataResult = BddAccess.InsertDataIntoPostgresql(data);
+        if (insertDataResult.StartsWith("ok"))
         {
-          var sqlRequest = BddAccess.GetCreationSchemaSqlRequest(schemaName);
-          var creationSchemaResult = BddAccess.ExecuteSqlRequest(sqlRequest);
-          if (creationSchemaResult.StartsWith("ok"))
-          {
-            TextResult.Text += $"Le schéma {schemaName} a été créé.";
-          }
-          else
-          {
-            TextResult.Text += $"Erreur lors de la création du schéma {schemaName}, l'erreur est : {creationSchemaResult.Substring(3)} ";
-          }
+          TextResult.Text += "Les données ont été insérées dans la table.";
+        }
+        else
+        {
+          TextResult.Text += $"Erreur lors de l'insertion des données dans les tables, l'erreur est : {insertDataResult.Substring(3)} ";
         }
       }
+    }
 
+    private void CreateTables(string item)
+    {
       // create tables
-      if (checkedItems.Contains("Create tables"))
+      if (item.Contains("Create tables"))
       {
-        TextResult.Text += Environment.NewLine;
+        AddNewLine();
         TextResult.Text += "Création des Tables";
-        TextResult.Text += Environment.NewLine;
+        AddNewLine();
         var tableNameList = BddAccess.GetTableList();
         foreach (var tableName in tableNameList)
         {
@@ -181,6 +184,65 @@ namespace CopyOracleDatabaseToPostgresql
           }
         }
       }
+    }
+
+    private void CreateSchemasFor(string item)
+    {
+      // create schemas
+      if (item.Contains("Create Schemas"))
+      {
+        AddNewLine();
+        TextResult.Text += "Création des Schémas";
+        AddNewLine();
+        var schemaNameList = BddAccess.GetSchemaList();
+        foreach (var schemaName in schemaNameList)
+        {
+          var sqlRequest = BddAccess.GetCreationSchemaSqlRequest(schemaName);
+          var creationSchemaResult = BddAccess.ExecuteSqlRequest(sqlRequest);
+          if (creationSchemaResult.StartsWith("ok"))
+          {
+            TextResult.Text += $"Le schéma {schemaName} a été créé.";
+            AddNewLine();
+          }
+          else
+          {
+            TextResult.Text += $"Erreur lors de la création du schéma {schemaName}, l'erreur est : {creationSchemaResult.Substring(3)} ";
+            AddNewLine();
+          }
+        }
+      }
+    }
+
+    private void CreateRoleFor(string item)
+    {
+      // create roles
+      if (item.Contains("Create Roles"))
+      {
+        AddNewLine();
+        TextResult.Text += "Création des Rôles";
+        AddNewLine();
+        var roleNameList = BddAccess.GetRoleList();
+        foreach (var roleName in roleNameList)
+        {
+          var sqlRequest = BddAccess.GetCreationRoleSqlRequest(roleName);
+          var creationRoleResult = BddAccess.ExecuteSqlRequest(sqlRequest);
+          if (creationRoleResult.StartsWith("ok"))
+          {
+            TextResult.Text += $"Le rôle {roleName} a été créé.";
+            AddNewLine();
+          }
+          else
+          {
+            TextResult.Text += $"Erreur lors de la création du rôle {roleName}, l'erreur est : {creationRoleResult.Substring(3)} ";
+            AddNewLine();
+          }
+        }
+      }
+    }
+
+    private void AddNewLine()
+    {
+      TextResult.Text += Environment.NewLine;
     }
   }
 }
