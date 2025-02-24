@@ -171,13 +171,31 @@ namespace CopyOracleDatabaseToPostgresql
 
       if (theSchema == schemaFour)
       {
-        CreateAllTablesForSchema4(schemaFour);
+        FillAllTablesForSchema4(schemaFour);
       }
     }
 
-    private void CreateAllTablesForSchema4(string schemaFour)
+    private void FillAllTablesForSchema4(string schemaFour)
     {
       // fill all tables for schema4
+      // disable all constraints for Postgresql
+      var disableConstraintsResult = BddAccess.DisableAllConstraints();
+      if (disableConstraintsResult)
+      {
+        TextResult.Text += "Les contraintes ont été désactivées.";
+        AddNewLine();
+      }
+      else
+      {
+        TextResult.Text += "Erreur lors de la désactivation des contraintes.";
+        AddNewLine();
+        return;
+      }
+
+      // get data from oracle
+      var oracleConnectionString = BddAccess.GetOracleConnectionString();
+      var data = BddAccess.GetDataFromOracle(oracleConnectionString, "table1");
+
     }
 
     private void FillAllTablesForSchema3(string schemaThree)

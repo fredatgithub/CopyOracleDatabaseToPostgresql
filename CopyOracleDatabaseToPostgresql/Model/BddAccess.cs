@@ -215,5 +215,13 @@ namespace CopyOracleDatabaseToPostgresql.Model
 
       return result;
     }
+
+    internal static bool DisableAllConstraints()
+    {
+      // get disable constraints sql request
+      var sqlRequest = "ALTER TABLE table_name DISABLE CONSTRAINT ALL;";
+      var result = ExecuteSqlRequest(sqlRequest);
+      return result.StartsWith("ok");
+    }
   }
 }
