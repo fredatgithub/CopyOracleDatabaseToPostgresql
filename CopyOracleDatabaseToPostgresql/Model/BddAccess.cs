@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using Npgsql;
+using Oracle.ManagedDataAccess.Client;
 
 namespace CopyOracleDatabaseToPostgresql.Model
 {
@@ -15,7 +16,7 @@ namespace CopyOracleDatabaseToPostgresql.Model
 
     public static string ExecuteSqlRequest(string sqlRequest)
     {
-      var connectionString = GetConnectionString();
+      var connectionString = GetPostgresqlConnectionString();
       var result = ExecuteNonQuery(connectionString, sqlRequest);
       return result;
     }
@@ -74,18 +75,18 @@ namespace CopyOracleDatabaseToPostgresql.Model
       }
     }
 
-    private static string GetConnectionString()
+    public static string GetPostgresqlConnectionString()
     {
-      const string filename = "connectionString.txt";
+      const string filename = "PostgresqlConnectionString.txt";
       if (!File.Exists(filename))
       {
-        CreateConnectionStringFile(filename);
+        CreatePostgresqlConnectionStringFile(filename);
       }
 
       return File.ReadAllText(filename);
     }
 
-    private static void CreateConnectionStringFile(string filename)
+    private static void CreatePostgresqlConnectionStringFile(string filename)
     {
       try
       {
@@ -170,7 +171,7 @@ namespace CopyOracleDatabaseToPostgresql.Model
         CreateTableListFile(tableListFilename);
       }
 
-      var tableList =  new List<string>(File.ReadAllLines(tableListFilename));
+      var tableList = new List<string>(File.ReadAllLines(tableListFilename));
       return tableList;
     }
 
@@ -200,18 +201,73 @@ namespace CopyOracleDatabaseToPostgresql.Model
       return $"{sqlRequest};";
     }
 
-    internal static string GetDataFromOracle(string connectionString, string tableName)
+    internal static OracleDataReader GetDataFromOracle(string connectionString, string tableName)
     {
-      string result = "ok";
-      // TODO: get data from oracle
-
-      return result;
+      string request = $"SELECT * FROM {tableName}";
+      using (var connection = new OracleConnection(connectionString))
+      {
+        connection.Open();
+        using (var command = new OracleCommand(request, connection))
+        {
+          var reader = command.ExecuteReader();
+          return reader;
+        }
+      }
     }
 
-    internal static string InsertDataIntoPostgresql(object data)
+    internal static string InsertDataIntoPostgresql(string connectionString, string tablename, OracleDataReader data)
     {
       var result = "ok";
-      // TODO: insert data into postgresql
+      if (data == null)
+      {
+        return result;
+      }
+
+      using (var connection = new NpgsqlConnection(connectionString))
+      {
+        connection.Open();
+        using (var transaction = connection.BeginTransaction()) 
+        using (var command = new NpgsqlCommand())
+        {
+          command.Connection = connection;
+          command.Transaction = transaction; 
+
+          try
+          {
+            var columnNames = new List<string>();
+            var parameterNames = new List<string>();
+            var parameters = new List<NpgsqlParameter>();
+
+            for (int i = 0; i < data.FieldCount; i++)
+            {
+              columnNames.Add(data.GetName(i));
+              parameterNames.Add("@param" + i);
+            }
+
+            command.CommandText = $"INSERT INTO {tablename} ({string.Join(", ", columnNames)}) VALUES ({string.Join(", ", parameterNames)})";
+
+            while (data.Read()) 
+            {
+              command.Parameters.Clear(); 
+
+              for (int i = 0; i < data.FieldCount; i++)
+              {
+                var param = new NpgsqlParameter(parameterNames[i], data.GetValue(i) ?? DBNull.Value);
+                command.Parameters.Add(param);
+              }
+
+              command.ExecuteNonQuery();
+            }
+
+            transaction.Commit(); 
+          }
+          catch (Exception exception)
+          {
+            transaction.Rollback(); 
+            result = $"ko|Erreur : {exception.Message}";
+          }
+        }
+      }
 
       return result;
     }

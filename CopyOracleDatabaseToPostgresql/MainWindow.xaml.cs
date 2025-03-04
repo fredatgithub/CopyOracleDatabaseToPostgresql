@@ -7,6 +7,7 @@ using System;
 using CopyOracleDatabaseToPostgresql.Model;
 using Newtonsoft.Json.Linq;
 using System.Linq;
+using Oracle.ManagedDataAccess.Client;
 
 namespace CopyOracleDatabaseToPostgresql
 {
@@ -213,19 +214,22 @@ namespace CopyOracleDatabaseToPostgresql
       var schemaName = schema1.Replace("Fill tables in ", "");
       string tableListFilename = "tableListForSchema1.txt";
       var tablesList = BddAccess.GetTableList(tableListFilename);
-      var tableName = tablesList.FirstOrDefault();
-      // get data from oracle
       var oracleConnectionString = BddAccess.GetOracleConnectionString();
-      var data = BddAccess.GetDataFromOracle(oracleConnectionString, tableName);
-      // insert data into postgresql
-      var insertDataResult = BddAccess.InsertDataIntoPostgresql(data);
-      if (insertDataResult.StartsWith("ok"))
+      var postgresqlConnectionString = BddAccess.GetPostgresqlConnectionString();
+      foreach (var tableName in tablesList)
       {
-        TextResult.Text += $"Les données ont été insérées dans la table {tableName}";
-      }
-      else
-      {
-        TextResult.Text += $"Erreur lors de l'insertion des données dans la table {tableName}, l'erreur est : {insertDataResult.Substring(3)} ";
+        // get data from oracle
+        OracleDataReader data = BddAccess.GetDataFromOracle(oracleConnectionString, tableName);
+        // insert data into postgresql
+        var insertDataResult = BddAccess.InsertDataIntoPostgresql(postgresqlConnectionString, tableName, data);
+        if (insertDataResult.StartsWith("ok"))
+        {
+          TextResult.Text += $"Les données ont été insérées dans la table {tableName}";
+        }
+        else
+        {
+          TextResult.Text += $"Erreur lors de l'insertion des données dans la table {tableName}, l'erreur est : {insertDataResult.Substring(3)} ";
+        }
       }
     }
 
